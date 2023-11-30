@@ -1,11 +1,19 @@
 import os
-from transformers import AutoModel, AutoTokenizer
+
+
+# from transformers import AutoModel, AutoTokenizer
+
+from modelscope import AutoTokenizer, AutoModel, snapshot_download
+
 import gradio as gr
 import mdtex2html
 from utils import load_model_on_gpus
 import torch
 
-MODEL_PATH = os.environ.get('MODEL_PATH', 'THUDM/chatglm3-6b')
+# MODEL_PATH = os.environ.get('MODEL_PATH', 'THUDM/chatglm3-6b')
+
+MODEL_PATH = snapshot_download("ZhipuAI/chatglm3-6b", revision = "v1.0.0")
+
 TOKENIZER_PATH = os.environ.get("TOKENIZER_PATH", MODEL_PATH)
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -95,8 +103,9 @@ with gr.Blocks() as demo:
     with gr.Row():
         with gr.Column(scale=4):
             with gr.Column(scale=12):
-                user_input = gr.Textbox(show_label=False, placeholder="Input...", lines=10).style(
-                    container=False)
+                # user_input = gr.Textbox(show_label=False, placeholder="Input...", lines=10).style(
+                #     container=False)
+                user_input = gr.Textbox(show_label=False, placeholder="Input...", lines=10)
             with gr.Column(min_width=32, scale=1):
                 submitBtn = gr.Button("Submit", variant="primary")
         with gr.Column(scale=1):
@@ -114,4 +123,4 @@ with gr.Blocks() as demo:
 
     emptyBtn.click(reset_state, outputs=[chatbot, history, past_key_values], show_progress=True)
 
-demo.queue().launch(share=False, server_name="127.0.0.1", server_port=8501, inbrowser=True)
+demo.queue().launch(share=False, server_name="0.0.0.0", server_port=8501, inbrowser=True)
